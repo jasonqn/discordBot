@@ -1,4 +1,5 @@
 import random
+from random import randint
 
 
 def get_response(user_input: str) -> str:
@@ -9,15 +10,16 @@ def get_response(user_input: str) -> str:
         return 'Hello there!'
 
 
-def roll_dice(select_dice: int, dice_amount: int):
-    dices = [4, 6, 8, 10, 12, 20, 100]
-    dice_range = range(1, 10, 1)
-    dice_roll = select_dice * dice_amount
+def roll_dice(select_dice: int, die_face_selection: int):
+    die_face = [4, 6, 8, 10, 12, 20, 100]
 
-    if select_dice not in dices:
-        return ''
+    dice_amount = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    dice_roll = select_dice * (randint(1, die_face_selection))
 
-    if dice_amount not in dice_range:
-        return ''
+    if select_dice not in dice_amount:
+        return 'You can only roll up to 10 dice, your first input is the number of die you wish to roll'
 
-    return f'You chose a {select_dice} sided dice and you roll {dice_amount} dices giving you {dice_roll}'
+    if die_face_selection not in die_face:
+        return 'Invalid dice selection, only 4, 6, 8, 10, 12, 20, 100 sided die can be selected'
+
+    return f'You chose {select_dice}  dice with {die_face_selection} faces giving you {dice_roll}'
