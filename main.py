@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from discord import Intents, Message
 from discord.ext import commands
 from responses import *
+import pymongo
+from pymongo import MongoClient
 
 # Loads token
 load_dotenv()
@@ -14,8 +16,8 @@ intents: Intents = Intents.default()
 intents.message_content = True  # NOQA
 intents.messages = True  # NOQA
 
+# Bot Command setup
 bot = commands.Bot(command_prefix='!', intents=intents)
-print(bot.command_prefix)
 
 
 @bot.command()
