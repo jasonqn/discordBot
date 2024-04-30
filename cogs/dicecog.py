@@ -1,4 +1,4 @@
-
+import discord
 from discord.ext import commands
 
 from discord.ext.commands import Cog
@@ -40,5 +40,5 @@ class DiceCog(commands.Cog):
             print(e)
 
 
-def setup(bot):
-    bot.add_cog(DiceCog(bot))
+async def setup(bot):
+    await bot.add_cog(DiceCog(bot))
