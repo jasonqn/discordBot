@@ -1,8 +1,9 @@
+from random import randint
+
 import discord
 from discord.ext import commands
 
 from discord.ext.commands import Cog
-from responses import *
 
 
 # dice roll function called into "roll" function below within
