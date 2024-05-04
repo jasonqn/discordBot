@@ -39,6 +39,7 @@ async def setup_hook() -> None:
 @bot.event
 async def on_ready() -> None:
     print(f'{bot.user} is now running! :)')
+    print(f'{bot.load_extension()} are loaded!')
 
 
 @bot.event

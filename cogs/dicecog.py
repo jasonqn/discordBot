@@ -39,7 +39,7 @@ def roll_dice(select_dice: int, die_face_selection: int):
     if die_face_selection not in die_face:
         return 'Invalid dice selection, only 4, 6, 8, 10, 12, 20, 100 sided die can be selected'
 
-    return f'You chose {select_dice}  dice with {die_face_selection} faces: {individual_rolls}. Total: {total_roll}'
+    return f'Rolled {select_dice}  dice with {die_face_selection} faces: {individual_rolls}. Total: {total_roll}'
 
 
 class DiceCog(commands.Cog):
