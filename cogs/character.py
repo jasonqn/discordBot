@@ -13,9 +13,12 @@ class Character(commands.Cog):
         try:
             # Roll 4d6 discarding the lowest in each instance
             # Strength roll
-            strength = [roll_dice(1, 6) for _ in range(4)]
-            lowest_die_strength = min(strength)
+            strength: list[int] = [roll_dice(1, 6) for _ in range(4)]
+            print(type(strength))
+            lowest_die_strength: int = int(min(strength))
+            print(type(lowest_die_strength))
             strength_total = sum(strength) - lowest_die_strength
+            print(type(strength_total))
 
             # Dexterity roll
             dexterity = [roll_dice(1, 6) for _ in range(4)]
@@ -43,13 +46,14 @@ class Character(commands.Cog):
             charisma_total = sum(charisma) - lowest_die_charisma
 
             # Construct the response
-            response = f"Character Name: {char_name}\nStats: "
+            response = f"Character Name: {char_name} \nStats: "
             response += f"Strength: {strength_total} taking the lowest roll away of :{lowest_die_strength}\n "
             response += f"Dexterity: {dexterity_total} taking the lowest roll away of :{lowest_die_dexterity}\n "
             response += f"Constitution: {constitution_total} taking the lowest roll away of :{lowest_die_constitution}\n "
             response += f"Intelligence: {intelligence_total} taking the lowest roll away of :{lowest_die_intelligence}\n "
             response += f"Wisdom: {wisdom_total} taking the lowest roll away of :{lowest_die_wisdom}\n "
             response += f"Charisma: {charisma_total} taking the lowest roll away of :{lowest_die_charisma}"
+            print(response)
             await ctx.send(response)
         except Exception as e:
             print(e)
