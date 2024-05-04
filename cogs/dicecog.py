@@ -27,7 +27,7 @@ def roll_dice(select_dice: int, die_face_selection: int):
     dice_rolls = [randint(1, die_face[die_face_selection]) for _ in range(select_dice)]
 
     # total rolls
-    total_roll = sum(dice_rolls)
+    total_roll: int = sum(dice_rolls)
 
     # Format individual rolls
     individual_rolls = ', '.join(str(roll) for roll in dice_rolls)
@@ -39,7 +39,7 @@ def roll_dice(select_dice: int, die_face_selection: int):
     if die_face_selection not in die_face:
         return 'Invalid dice selection, only 4, 6, 8, 10, 12, 20, 100 sided die can be selected'
 
-    return f'Total: {total_roll}'
+    return total_roll
 
 
 class DiceCog(commands.Cog):

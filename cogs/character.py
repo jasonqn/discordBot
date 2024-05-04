@@ -13,9 +13,10 @@ class Character(commands.Cog):
         try:
             # Roll 4d6 discarding the lowest in each instance
             # Strength roll
-            strength: list[int] = [roll_dice(1, 6) for _ in range(4)]
+            strength = [roll_dice(1, 6) for _ in range(4)]
+            print(strength)
             print(type(strength))
-            lowest_die_strength: int = int(min(strength))
+            lowest_die_strength = min(strength)
             print(type(lowest_die_strength))
             strength_total = sum(strength) - lowest_die_strength
             print(type(strength_total))
@@ -47,12 +48,14 @@ class Character(commands.Cog):
 
             # Construct the response
             response = f"Character Name: {char_name} \nStats: "
-            response += f"Strength: {strength_total} taking the lowest roll away of :{lowest_die_strength}\n "
-            response += f"Dexterity: {dexterity_total} taking the lowest roll away of :{lowest_die_dexterity}\n "
-            response += f"Constitution: {constitution_total} taking the lowest roll away of :{lowest_die_constitution}\n "
-            response += f"Intelligence: {intelligence_total} taking the lowest roll away of :{lowest_die_intelligence}\n "
-            response += f"Wisdom: {wisdom_total} taking the lowest roll away of :{lowest_die_wisdom}\n "
-            response += f"Charisma: {charisma_total} taking the lowest roll away of :{lowest_die_charisma}"
+            response += f"Strength: {strength_total}, you rolled {strength} taking the lowest roll away of : {lowest_die_strength}\n "
+            response += f"Dexterity: {dexterity_total}, you rolled {dexterity} taking the lowest roll away of : {lowest_die_dexterity}\n "
+            response += (f"Constitution: {constitution_total}, you rolled {constitution} taking the lowest roll away "
+                         f"of : {lowest_die_constitution}\n")
+            response += (f"Intelligence: {intelligence_total}, you rolled {intelligence} taking the lowest roll away "
+                         f"of : {lowest_die_intelligence}\n")
+            response += f"Wisdom: {wisdom_total}, you rolled {wisdom} taking the lowest roll away of : {lowest_die_wisdom}\n"
+            response += f"Charisma: {charisma_total}, you rolled {charisma} taking the lowest roll away of : {lowest_die_charisma}"
             print(response)
             await ctx.send(response)
         except Exception as e:
