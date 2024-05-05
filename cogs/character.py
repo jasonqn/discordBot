@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from dicecog import roll_dice
 
@@ -34,15 +35,23 @@ class Character(commands.Cog):
             charisma = stat_roll_logic()
 
             # Construct the response
-            response = f"Character Name: {char_name} \nStats: "
-            response += f"Strength: {strength}\n"
+            # response = f"Character Name: {char_name} \n\nStats:\n "
+            response = f"Strength: {strength}\n"
             response += f"Dexterity: {dexterity}\n"
             response += f"Constitution: {constitution}\n"
             response += f"Intelligence: {intelligence}\n"
             response += f"Wisdom: {wisdom}\n"
             response += f"Charisma: {charisma}"
             print(response)
-            await ctx.send(response)
+
+            embed_character_creator = discord.Embed(title="Character creator",
+                                                    description="View of rolled stats for created character",
+                                                    colour=0xf54900)
+
+            embed_character_creator.add_field(name="Character Name ", value=char_name, inline=False)
+            embed_character_creator.add_field(name="Stats Rolled: ", value=response, inline=True)
+
+            await ctx.send(embed=embed_character_creator)
         except Exception as e:
             print(e)
 
