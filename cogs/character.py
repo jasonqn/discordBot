@@ -16,13 +16,13 @@ def stat_roll_logic():
             f"of : {lowest_roll}\n ")
 
 
-class Character(commands.Cog):
+class RollCharacter(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name='character_roll')
-    async def character_creator(self, ctx, char_name: str):
+    async def character_roll(self, ctx, char_name: str):
         print("character_roll called!")
         try:
             # Roll 4d6 discarding the lowest in each instance
@@ -56,5 +56,17 @@ class Character(commands.Cog):
             print(e)
 
 
+class MakeCharacter(discord.ui.Modal, title="Character Creator"):
+    first_name = discord.ui.TextInput(
+        label="First Name",
+        placeholder="First name here..."
+    )
+
+    last_name = discord.ui.TextInput(
+        label="Last Name",
+        placeholder="Last name here..."
+    )
+
+
 async def setup(bot):
-    await bot.add_cog(Character(bot))
+    await bot.add_cog(RollCharacter(bot))
