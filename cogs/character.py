@@ -56,17 +56,5 @@ class RollCharacter(commands.Cog):
             print(e)
 
 
-class MakeCharacter(discord.ui.Modal, title="Character Creator"):
-    first_name = discord.ui.TextInput(
-        label="First Name",
-        placeholder="First name here..."
-    )
-
-    last_name = discord.ui.TextInput(
-        label="Last Name",
-        placeholder="Last name here..."
-    )
-
-
 async def setup(bot):
     await bot.add_cog(RollCharacter(bot))
