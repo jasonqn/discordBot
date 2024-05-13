@@ -24,6 +24,6 @@ class Oauth:
     def discordTOKEN(self):
         return self.TOKEN, self.OWNER_IDS
 
-    def databaseTOKEN(self):
+    def databaseCONN(self):
         return self.client
 
