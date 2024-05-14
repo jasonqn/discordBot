@@ -10,12 +10,10 @@ DB_LINK: Final[str] = os.getenv('MONGO_DB_CONN')
 
 
 class Oauth:
-
-    def __init__(self, bot):
+    def __init__(self):
         load_dotenv()
         self.TOKEN = TOKEN
         self.OWNER_IDS = ['627569347417866271']
-        self.bot = bot
 
         # database token
         self.db_link = DB_LINK

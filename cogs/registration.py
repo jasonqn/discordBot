@@ -4,7 +4,6 @@ from discord.ext import commands
 from discord import Message
 import pymongo
 
-
 # import config class for database
 clientObj = config.Oauth()
 client = clientObj.databaseCONN()
@@ -37,34 +36,30 @@ class Buttons(discord.ui.View):
         super().__init__(timeout=timeout or 180)
 
         self.client = client
-        self.collection = collection
         self.post = {}
+        self.registered_users = []
 
-    def insert_data(self, message: Message):
-        user_id: str = str(message.id)
-        username: str = str(message.author)
-        self.post = {
+    @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
+    async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button, message: Message):
+        user_id = str(message.author.id)
+        username = str(message.author)
+        user_details = {
             "user_id": user_id,
             "username": username
         }
-        register_user = self.post
 
-    @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
-    async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         # checks if the user has already registered
-        if interaction.user in self.registered_users:
-            return await (interaction.response.send_message
-                          (content="User already registered!", ephemeral=True))
+        if interaction.user:
+            collection.insert_one(user_details)
+            await interaction.response.send_message(content="User registered successfully!", ephemeral=True)
 
         self.registered_users.append(interaction.user)  # add the user to register list
+        print(self.registered_users)
 
     @discord.ui.button(label="No", style=discord.ButtonStyle.red)
     async def no_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user in self.registered_users:
-            return await interaction.response.send_message(content="User already registered!", ephemeral=True)
-        return
-
-
+        if interaction.user:
+            return await interaction.response.send_message(content="User not registered!", ephemeral=True)
 
 
 async def setup(bot):
