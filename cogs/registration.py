@@ -35,25 +35,26 @@ class Buttons(discord.ui.View):
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)
 
+        self.collection = collection
         self.client = client
         self.post = {}
         self.registered_users = []
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
     async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button, message: Message):
-        user_id = str(message.author.id)
-        username = str(message.author)
+        user_id = str(interaction.user.id)
+        username = str(interaction.user.name)
         user_details = {
             "user_id": user_id,
             "username": username
         }
 
-        # checks if the user has already registered
-        if interaction.user:
-            collection.insert_one(user_details)
+        # Check if the user is already registered
+        if self.collection.find_one({"user_id": user_id}):
+            await interaction.response.send_message(content="User already registered!", ephemeral=True)
+        else:
+            self.collection.insert_one(user_details)
             await interaction.response.send_message(content="User registered successfully!", ephemeral=True)
-
-        self.registered_users.append(interaction.user)  # add the user to register list
         print(self.registered_users)
 
     @discord.ui.button(label="No", style=discord.ButtonStyle.red)
