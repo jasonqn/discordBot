@@ -1,21 +1,28 @@
-import requests
-import json
-url = "https://eastus2.azure.data.mongodb-api.com/app/data-nzixvpy/endpoint/data/v1/action/findOne"
+import pymongo
+import config
+from dotenv import load_dotenv
 
-payload = json.dumps({
-    "collection": "theaters",
-    "database": "sample_mflix",
-    "dataSource": "Cluster0",
-    "projection": {
-        "_id": 1
-    }
-})
-headers = {
-  'Content-Type': 'application/json',
-  'Access-Control-Request-Headers': '*',
-  'api-key': '27g7HFGlKLXxGpfhyf6c4lL6Znsiqrs78nj7Wotqnu8yxbXMTIWi3nAhzo5a2uIh',
+# Load environment variables from a .env file
+load_dotenv()
+
+# Initialize the Oauth class
+clientObj = config.Oauth()
+
+# Get the database connection from the Oauth class
+client = clientObj.databaseCONN()
+
+# Access the dnd database and the login collection
+db = client.dnd
+collection = db.login
+
+# Sample document to insert
+user_details = {
+    "user_id": "123456789",
+    "username": "example_user"
 }
 
-response = requests.request("POST", url, headers=headers, data=payload)
+# Insert the document into the collection
+result = collection.insert_one(user_details)
 
-print(response.text)
+# Print the result of the insertion
+print(f"Inserted document with id: {result.inserted_id}")
