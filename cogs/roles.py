@@ -53,11 +53,11 @@ class ReactionRoles(Cog):
                         self.bot.ph.warn("Not performing any action as result.")
                     break
 
-    @Cog.listener()
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent):
         await self.on_reaction_add(payload, "add")
 
-    @Cog.listener()
+    @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: RawReactionActionEvent):
         await self.on_reaction_add(payload, "remove")
 

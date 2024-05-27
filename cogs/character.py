@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from dicecog import roll_dice
+from dice import roll_dice
 
 
 def stat_roll_logic():
@@ -21,7 +21,7 @@ class RollCharacter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='character_roll')
+    @commands.command(name='rollcharacter')
     async def character_roll(self, ctx, char_name: str):
         print("character_roll called!")
         try:
