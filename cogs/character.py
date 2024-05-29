@@ -1,19 +1,6 @@
 import discord
 from discord.ext import commands
-from dice import roll_dice
-
-
-def stat_roll_logic():
-    stat = [roll_dice(1, 6) for _ in range(4)]
-    stat.sort()
-    while stat[0] & stat[1] == 1:
-        stat.pop(0)
-        new_roll = roll_dice(1, 6)
-        stat.insert(0, new_roll)
-    lowest_roll = min(stat)
-    stat_total = sum(stat) - lowest_roll
-    return (f"{stat_total}, you rolled {stat} taking the lowest roll away "
-            f"of : {lowest_roll}\n ")
+from dice import roll_dice, stat_roll_logic
 
 
 class RollCharacter(commands.Cog):

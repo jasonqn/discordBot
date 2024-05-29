@@ -33,3 +33,16 @@ def roll_dice(select_dice: int, die_face_selection: int):
         return 'Invalid dice selection, only 4, 6, 8, 10, 12, 20, 100 sided die can be selected'
 
     return total_roll
+
+
+def stat_roll_logic():
+    stat = [roll_dice(1, 6) for _ in range(4)]
+    stat.sort()
+    while stat[0] & stat[1] == 1:
+        stat.pop(0)
+        new_roll = roll_dice(1, 6)
+        stat.insert(0, new_roll)
+    lowest_roll = min(stat)
+    stat_total = sum(stat) - lowest_roll
+    return (f"{stat_total}, you rolled {stat} taking the lowest roll away "
+            f"of : {lowest_roll}\n ")
