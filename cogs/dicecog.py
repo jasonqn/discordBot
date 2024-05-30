@@ -27,6 +27,7 @@ class DiceCog(commands.Cog):
         user_id = str(ctx.author.id)
         user = db.login.find_one({"user_id": user_id})
 
+
         if not user:
             await ctx.send("You are not registered. Please register first using the !register command.")
             return
