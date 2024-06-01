@@ -21,7 +21,7 @@ class PlayerRegistration(commands.Cog):
     async def register(self, ctx):
         try:
             # imports the yes and no buttons below the embed message
-            view = Buttons()
+            view = RegisterButtons()
             embed_register = discord.Embed(title="Account Registration",
                                            description=f"Would you like to register an account with DnD Bot? ")
             await ctx.send(embed=embed_register, view=view)
@@ -30,7 +30,7 @@ class PlayerRegistration(commands.Cog):
 
 
 # creates buttons
-class Buttons(discord.ui.View):
+class RegisterButtons(discord.ui.View):
 
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)

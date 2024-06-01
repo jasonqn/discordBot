@@ -6,16 +6,12 @@ from dice import roll_dice
 
 import config
 
-
 # import config class for database
 clientObj = config.Oauth()
 client = clientObj.databaseCONN()
 db = client.dnd
 collection = db.dice_rolls
 
-
-# dice roll function called into "roll" function below within
-# the Dice class
 
 class DiceCog(commands.Cog):
     def __init__(self, bot):
@@ -26,7 +22,6 @@ class DiceCog(commands.Cog):
     async def roll(self, ctx, select_dice: int, die_face_selection: int):
         user_id = str(ctx.author.id)
         user = db.login.find_one({"user_id": user_id})
-
 
         if not user:
             await ctx.send("You are not registered. Please register first using the !register command.")
