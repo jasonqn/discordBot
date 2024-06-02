@@ -35,10 +35,10 @@ def roll_dice(select_dice: int, die_face_selection: int):
     return total_roll
 
 
-def stat_roll_logic():
+def no_double_ones():
     stat = [roll_dice(1, 6) for _ in range(4)]
     stat.sort()
-    while stat[0] & stat[1] == 1:
+    while stat[0] & stat[1] == 1:   
         stat.pop(0)
         new_roll = roll_dice(1, 6)
         stat.insert(0, new_roll)

@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from dice import roll_dice, stat_roll_logic
+from dice import roll_dice, no_double_ones
 
 
 class RollCharacter(commands.Cog):
@@ -8,18 +8,18 @@ class RollCharacter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='rollcharacter')
+    @commands.command(name='random')
     async def character_roll(self, ctx, char_name: str):
         print("character_roll called!")
         try:
             # Roll 4d6 discarding the lowest in each instance
             # Strength roll
-            strength = stat_roll_logic()
-            dexterity = stat_roll_logic()
-            constitution = stat_roll_logic()
-            intelligence = stat_roll_logic()
-            wisdom = stat_roll_logic()
-            charisma = stat_roll_logic()
+            strength = no_double_ones()
+            dexterity = no_double_ones()
+            constitution = no_double_ones()
+            intelligence = no_double_ones()
+            wisdom = no_double_ones()
+            charisma = no_double_ones()
 
             # Construct the response
             # response = f"Character Name: {char_name} \n\nStats:\n "

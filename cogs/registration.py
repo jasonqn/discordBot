@@ -56,7 +56,7 @@ class RegisterButtons(discord.ui.View):
             "user_id": user_id,
             "username": username
         }
-        collection.insert_one(user_details)
+        self.collection.insert_one(user_details)
 
         await interaction.response.send_message(content="User registered successfully!", ephemeral=True)
 

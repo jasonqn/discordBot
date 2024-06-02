@@ -74,9 +74,23 @@ class EventsButtons(discord.ui.View):
 
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)
-        self.collection = events_db
+        self.events = events_db
 
-    @discord.ui.button(label="Roll Dice",style=discord.ButtonStyle.red)
-    async def roll_dice_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="Crafting", style=discord.ButtonStyle.red)
+    async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
+        dice = roll_dice(1, 20)
+
+        if interaction.user:
+            outcome = dice
+            if outcome <= 9:
+                await ctx.send
+
+
+        user_roll_result = {
+            "user_id": user_id,
+            "username": username,
+        }
 
 
