@@ -32,7 +32,7 @@ class RollCharacter(commands.Cog):
             print(response)
 
             embed_character_creator = discord.Embed(title="Character creator",
-                                                    description="View of rolled stats for created character",
+                                                    description="Click",
                                                     colour=0xf54900)
 
             embed_character_creator.add_field(name="Character Name ", value=char_name, inline=False)

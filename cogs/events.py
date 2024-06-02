@@ -9,35 +9,20 @@ import config
 clientObj = config.Oauth()
 client = clientObj.databaseCONN()
 db = client.dnd
-collection = db.events
+events_db = db.events
+login_db = db.login
 
 
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.collection = collection
+        self.collection = events_db
 
     @commands.command(name='events')
     async def roll(self, ctx, select_dice: int, die_face_selection: int):
         user_id = str(ctx.author.id)
         user = db.login.find_one({"user_id": user_id})
 
-        if not user:
-            await ctx.send("You are not registered. Please register first using the !register command.")
-            return
-
-    @commands.command(name='add')
-    async def add_event(self, ctx):
-        user_id = str(ctx.author.id)
-        user = db.login.find_one({"user_id": user_id})
-        if not user:
-            await ctx.send("You are not registered. Please register first using the !register command.")
-            return
-
-    @commands.command(name='delete')
-    async def delete_event(self, ctx):
-        user_id = str(ctx.author.id)
-        user = db.login.find_one({"user_id": user_id})
         if not user:
             await ctx.send("You are not registered. Please register first using the !register command.")
             return
@@ -89,8 +74,9 @@ class EventsButtons(discord.ui.View):
 
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)
-        self.collection = collection
+        self.collection = events_db
 
     @discord.ui.button(label="Roll Dice",style=discord.ButtonStyle.red)
     async def roll_dice_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+
 

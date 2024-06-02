@@ -46,3 +46,12 @@ def stat_roll_logic():
     stat_total = sum(stat) - lowest_roll
     return (f"{stat_total}, you rolled {stat} taking the lowest roll away "
             f"of : {lowest_roll}\n ")
+
+
+def random_stat_roll():
+    stat = [roll_dice(1, 6) for _ in range(4)]
+    stat.sort()
+    stat_total = sum(stat)
+    return f"{stat_total}, you rolled {stat}"
+
+
