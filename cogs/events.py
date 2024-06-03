@@ -29,6 +29,11 @@ class Events(commands.Cog):
 
     # Define embed message templates for D&D downtime events
 
+    def downtime_events_list(self):
+        embed = discord.Embed(title="Downtime events", color=discord.Color.orange())
+        embed.add_field(name="Activity", value="Choose your activity by pressing a button below")
+        return embed
+
     def create_crafting_embed(self):
         embed = discord.Embed(title="Crafting Downtime", color=discord.Color.blue())
         embed.add_field(name="Activity", value="Crafting", inline=False)
@@ -38,6 +43,16 @@ class Events(commands.Cog):
         embed.add_field(name="Time", value="Varies depending on item complexity", inline=False)
         embed.set_footer(text="Happy Crafting!")
         return embed
+
+    def response_crafting_embed(self, username: str):
+        dice = roll_dice(1, 20)
+        embed = discord.Embed(title="Crafting Downtime", colour=discord.Color.blue())
+        embed.add_field(name="Activity", value="Crafting", inline=False)
+        embed.add_field(name="Description", value=f"{username} has rolled for crafting! ",
+                        inline=False)
+        embed.add_field(name="Roll", value="If you accept, please click the roll button below")
+        return embed
+
 
     def create_training_embed(self):
         embed = discord.Embed(title="Training Downtime", color=discord.Color.green())
@@ -76,21 +91,17 @@ class EventsButtons(discord.ui.View):
         super().__init__(timeout=timeout or 180)
         self.events = events_db
 
-    @discord.ui.button(label="Crafting", style=discord.ButtonStyle.red)
+    @discord.ui.button(label="Roll Dice", style=discord.ButtonStyle.red)
     async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
         dice = roll_dice(1, 20)
+        return await dice
 
-        if interaction.user:
-            outcome = dice
-            if outcome <= 9:
-                await ctx.send
+    @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
+    async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
 
-
-        user_roll_result = {
-            "user_id": user_id,
-            "username": username,
-        }
 
 
