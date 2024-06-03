@@ -22,10 +22,45 @@ class Events(commands.Cog):
     async def roll(self, ctx, select_dice: int, die_face_selection: int):
         user_id = str(ctx.author.id)
         user = db.login.find_one({"user_id": user_id})
+        buttons = EventsButtons
 
         if not user:
             await ctx.send("You are not registered. Please register first using the !register command.")
             return
+
+
+class EventsButtons(discord.ui.View):
+
+    def __init__(self, *, timeout=None):
+        super().__init__(timeout=timeout or 180)
+        self.events = events_db
+
+    @discord.ui.button(label="Roll Dice", style=discord.ButtonStyle.red)
+    async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
+        dice = roll_dice(1, 20)
+        return await dice
+
+    @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
+    async def crafting_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
+
+    @discord.ui.button(label="Training", style=discord.ButtonStyle.green)
+    async def training_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
+
+    @discord.ui.button(label="Carousing", style=discord.ButtonStyle.gray)
+    async def carousing_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
+
+    @discord.ui.button(label="Researching", style=discord.ButtonStyle.red)
+    async def researching_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
 
     # Define embed message templates for D&D downtime events
 
@@ -52,7 +87,6 @@ class Events(commands.Cog):
                         inline=False)
         embed.add_field(name="Roll", value="If you accept, please click the roll button below")
         return embed
-
 
     def create_training_embed(self):
         embed = discord.Embed(title="Training Downtime", color=discord.Color.green())
@@ -83,25 +117,3 @@ class Events(commands.Cog):
         embed.add_field(name="Time", value="Varies depending on research complexity", inline=False)
         embed.set_footer(text="Happy Researching!")
         return embed
-
-
-class EventsButtons(discord.ui.View):
-
-    def __init__(self, *, timeout=None):
-        super().__init__(timeout=timeout or 180)
-        self.events = events_db
-
-    @discord.ui.button(label="Roll Dice", style=discord.ButtonStyle.red)
-    async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
-        user_id = str(interaction.user.id)
-        username = str(interaction.user)
-        dice = roll_dice(1, 20)
-        return await dice
-
-    @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
-    async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
-        user_id = str(interaction.user.id)
-        username = str(interaction.user)
-
-
-
