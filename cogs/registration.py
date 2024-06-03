@@ -38,6 +38,7 @@ class RegisterButtons(discord.ui.View):
         self.collection = collection
         self.client = client
         self.registered_users = set()
+        self.player_role = 1244747172721987584
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
     async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -58,7 +59,15 @@ class RegisterButtons(discord.ui.View):
         }
         self.collection.insert_one(user_details)
 
-        await interaction.response.send_message(content="User registered successfully!", ephemeral=True)
+        if type(client.role) is not discord.Role:
+            client.role = interaction.guild.get_role(1244747172721987584)
+        if client.role not in interaction.user.roles:
+            await interaction.user.add_roles(client.role)
+            await interaction.response.send_message(f"You have been assigned the {client.role.mention}!")
+        else:
+            await interaction.response.send_message(f"You have already been assigned {client.role.mention}!")
+
+        await interaction.response.send_message(content=f"{interaction.user} registered successfully!", ephemeral=True)
 
     @discord.ui.button(label="No", style=discord.ButtonStyle.red)
     async def no_button(self, interaction: discord.Interaction, button: discord.ui.Button):

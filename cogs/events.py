@@ -46,6 +46,8 @@ class EventsButtons(discord.ui.View):
     async def crafting_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
+        return await interaction.response.send()
+
 
     @discord.ui.button(label="Training", style=discord.ButtonStyle.green)
     async def training_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
