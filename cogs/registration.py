@@ -20,6 +20,11 @@ class PlayerRegistration(commands.Cog):
     @commands.command(name="register")
     async def register(self, ctx):
         try:
+            # Check if the bot has the necessary permissions
+            if not ctx.guild.me.guild_permissions.manage_roles:
+                await ctx.send("I don't have the necessary permissions to manage roles.")
+                return
+
             # imports the yes and no buttons below the embed message
             view = RegisterButtons()
             embed_register = discord.Embed(title="Account Registration",
@@ -38,12 +43,15 @@ class RegisterButtons(discord.ui.View):
         self.collection = collection
         self.client = client
         self.registered_users = set()
-        self.player_role = 1244747172721987584
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
     async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
+        user_details = {
+            "user_id": user_id,
+            "username": username
+        }
 
         # Check if the user is already registered
         if user_id in self.registered_users:
@@ -52,20 +60,7 @@ class RegisterButtons(discord.ui.View):
         # Add the user to the registered users set
         self.registered_users.add(user_id)
 
-        # Insert the user details into the database
-        user_details = {
-            "user_id": user_id,
-            "username": username
-        }
         self.collection.insert_one(user_details)
-
-        if type(client.role) is not discord.Role:
-            client.role = interaction.guild.get_role(1244747172721987584)
-        if client.role not in interaction.user.roles:
-            await interaction.user.add_roles(client.role)
-            await interaction.response.send_message(f"You have been assigned the {client.role.mention}!")
-        else:
-            await interaction.response.send_message(f"You have already been assigned {client.role.mention}!")
 
         await interaction.response.send_message(content=f"{interaction.user} registered successfully!", ephemeral=True)
 
