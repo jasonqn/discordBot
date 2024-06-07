@@ -7,7 +7,7 @@ from discord.ext import commands
 import sys
 from cogs import dicecog
 
-sys.path.insert(0, 'C:/Users/Jason/finance/discordBot/cogs')
+# sys.path.insert(0, 'C:/Users/Jason/finance/discordBot/cogs')
 
 # Loads token
 load_dotenv()
@@ -17,6 +17,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 intents: Intents = Intents.default()
 intents.message_content = True  # NOQA
 intents.messages = True  # NOQA
+intents.members = True # NOQA
 
 # Bot Command setup
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -36,6 +37,7 @@ async def setup_hook() -> None:
     await load_extensions()
 
 
+# bot events listed below
 @bot.event
 async def on_ready() -> None:
     print(f'{bot.user} is now running! :)')

@@ -34,6 +34,12 @@ class PlayerRegistration(commands.Cog):
             print(e)
 
 
+
+    @commands.Cog.listener()
+    async def on_member_join(self,ctx):
+
+
+
 # creates buttons
 class RegisterButtons(discord.ui.View):
 
@@ -68,6 +74,7 @@ class RegisterButtons(discord.ui.View):
     async def no_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user:
             return interaction.response(content="User not registered!", ephemeral=True)
+
 
 
 async def setup(bot):
