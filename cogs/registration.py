@@ -61,19 +61,6 @@ class RegisterButtons(discord.ui.View):
             "user_id": user_id,
             "username": username
         }
-        role = discord.utils.get(interaction.guild.roles, name="Adventurer")
-        if role is None:
-            await interaction.guild.create_role(name="Adventurer")
-            role = discord.utils.get(interaction.guild.roles, name="Adventurer")
-
-        if role not in interaction.user.roles:
-            await interaction.user.add_roles(role)
-            await interaction.response.send_message(
-                content=f"Welcome, {interaction.user.mention}, Lorcan and Conor are fags!",
-                ephemeral=True)
-        else:
-            await interaction.response.send_message(
-                content=f"You are already an Adventurer, {interaction.user.mention}!", ephemeral=True)
 
         # Check if the user is already registered
         if user_id in self.registered_users:
