@@ -10,7 +10,7 @@ client = clientObj.databaseCONN()
 db = client.dnd
 
 
-class Roles(Cog):
+class Roles(commands.Cog):
 
     def __init__(self, bot):
         super().__init__()
@@ -62,8 +62,8 @@ class RoleButtons(discord.ui.View):
                       ':mage:', 'Warlock',
                       ':fire:', 'Wizard'
                       }
-    """""""""
-    @discord.ui.button(style=discord.ButtonStyle.grey, emoji=":shield:")
+
+    @discord.ui.button(label="Paladin",style=discord.ButtonStyle.grey, emoji="🛡️")
     async def paladin_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         role = discord.utils.get(interaction.guild.roles, name="Paladin")
         if role is None:
@@ -78,33 +78,22 @@ class RoleButtons(discord.ui.View):
             await interaction.response.send_message(
                 content=f"You are already an {role}, {interaction.user.mention}!", ephemeral=True)
         await role.edit(reason="Setting role permissions", permissions=self.permissions)
-        """""""""
-    async def on_button_click(self, button, interaction):
-        role_name = button.label
-        role = discord.utils.get(interaction.guild.roles, name=role_name)
+
+    @discord.ui.button(label="Fighter", style=discord.ButtonStyle.grey, emoji="⚔️")
+    async def fighter_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        role = discord.utils.get(interaction.guild.roles, name="Fighter")
         if role is None:
-            await interaction.guild.create_role(name=role_name)
-            role = discord.utils.get(interaction.guild.roles, name=role_name)
+            await interaction.guild.create_role(name="Fighter")
+            role = discord.utils.get(interaction.guild.roles, name="Fighter")
 
         if role not in interaction.user.roles:
             await interaction.user.add_roles(role)
             await interaction.response.send_message(
-                content=f"Welcome, {interaction.user.mention}, you have chosen {role}!",
-                ephemeral=True
-            )
+                content=f"Welcome, {interaction.user.mention}, you have chosen {role}!", ephemeral=True)
         else:
             await interaction.response.send_message(
-                content=f"You are already a {role}, {interaction.user.mention}!",
-                ephemeral=True
-            )
-
-    async def on_timeout(self):
-        self.clear_items()
-
-    def make_buttons(self):
-        for role_name, emoji in self.roles.items():
-            self.add_item(discord.ui.Button(style=discord.ButtonStyle.grey, label=role_name, emoji=emoji))
-
+                content=f"You are already an {role}, {interaction.user.mention}!", ephemeral=True)
+        await role.edit(reason="Setting role permissions", permissions=self.permissions)
 
 async def setup(bot):
     await bot.add_cog(Roles(bot))
