@@ -15,6 +15,10 @@ class Roles(commands.Cog):
         super().__init__()
         self.bot = bot
         self.db = db
+        self.role_names = ["Paladin", "Fighter", "Barbarian",
+                           "Bard", "Cleric", "Druid",
+                           "Monk", "Ranger", "Rogue",
+                           "Sorcerer", "Warlock", "Wizard"]
 
     @commands.command(name="role")
     async def register(self, ctx):

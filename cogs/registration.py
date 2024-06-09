@@ -36,11 +36,25 @@ class PlayerRegistration(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        channel = discord.utils.get(member.guild.system_channel, name="welcome")
+        channel = discord.utils.get(member.guild.text_channels, name="welcome")
+        try:
+            if channel is not None:
+                view = RegisterButtons()
+                embed = discord.Embed(title=f"Welcome to {member.guild.name}!",
+                                      colour=discord.Colour.green())
 
-        if channel is not None:
-            await member.send(f'Welcome {member.mention}.')
-            await channel.send(f'Welcome {member.mention}.')
+                embed.add_field(name="Getting Started",
+                                value="Please register by clicking the button below",
+                                inline=False)
+
+                embed.add_field(name="Need Help?",
+                                value="Check out the help channel for any Frequently Asked Questions ",
+                                inline=False)
+
+                embed.set_footer(text="Enjoy your stay!")
+                await member.send(embed=embed, view=view)
+        except Exception as e:
+            print(e)
 
 
 # creates buttons
@@ -53,7 +67,7 @@ class RegisterButtons(discord.ui.View):
         self.client = client
         self.registered_users = set()
 
-    @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Register", style=discord.ButtonStyle.green)
     async def yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
@@ -71,11 +85,6 @@ class RegisterButtons(discord.ui.View):
         self.collection.insert_one(user_details)
 
         await interaction.response.send_message(content=f"{interaction.user} registered successfully!", ephemeral=True)
-
-    @discord.ui.button(label="No", style=discord.ButtonStyle.red)
-    async def no_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user:
-            return interaction.response(content="User not registered!", ephemeral=True)
 
 
 async def setup(bot):
