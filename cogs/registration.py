@@ -56,6 +56,10 @@ class PlayerRegistration(commands.Cog):
         except Exception as e:
             print(e)
 
+    @commands.Cog.listener()
+    async def on_member_registration(self, interaction: discord.Interaction):
+        return None
+
 
 # creates buttons
 class RegisterButtons(discord.ui.View):
