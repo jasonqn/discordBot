@@ -58,7 +58,8 @@ class PlayerRegistration(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_registration(self, interaction: discord.Interaction):
-        return None
+        if self.collection.count_documents({"user_id"}, limit = 1) != 0:
+            return
 
 
 # creates buttons
