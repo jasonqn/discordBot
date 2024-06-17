@@ -1,8 +1,11 @@
 import config
 import discord
 from discord.ext import commands
+
 from discord import Message
 import pymongo
+
+from cogs.roles import *
 
 # import config class for database
 clientObj = config.Oauth()
@@ -53,13 +56,9 @@ class PlayerRegistration(commands.Cog):
 
                 embed.set_footer(text="Enjoy your stay!")
                 await member.send(embed=embed, view=view)
+                await channel.send(f"Hi {member.mention}!")
         except Exception as e:
             print(e)
-
-    @commands.Cog.listener()
-    async def on_member_registration(self, interaction: discord.Interaction):
-        if self.collection.count_documents({"user_id"}, limit = 1) != 0:
-            return
 
 
 # creates buttons
