@@ -19,14 +19,18 @@ class Events(commands.Cog):
         self.collection = events_db
 
     @commands.command(name='events')
-    async def roll(self, ctx, select_dice: int, die_face_selection: int):
+    async def roll(self, ctx):
         user_id = str(ctx.author.id)
         user = db.login.find_one({"user_id": user_id})
-        buttons = EventsButtons
+        buttons = EventsButtons()
 
         if not user:
             await ctx.send("You are not registered. Please register first using the !register command.")
             return
+
+        embed = discord.Embed(title="Downtime events", color=discord.Color.orange())
+        embed.add_field(name="Activity", value="Choose your activity by pressing a button below")
+        await ctx.send(embed=embed, view=buttons)
 
 
 class EventsButtons(discord.ui.View):
@@ -34,20 +38,15 @@ class EventsButtons(discord.ui.View):
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)
         self.events = events_db
+        self.dice = roll_dice(1, 20)
 
-    @discord.ui.button(label="Roll Dice", style=discord.ButtonStyle.red)
-    async def roll_dice_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
-        user_id = str(interaction.user.id)
-        username = str(interaction.user)
-        dice = roll_dice(1, 20)
-        return await dice
+    async def button_function(self, interaction: discord.Interaction):
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
     async def crafting_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
         return await interaction.response.send()
-
 
     @discord.ui.button(label="Training", style=discord.ButtonStyle.green)
     async def training_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
@@ -65,11 +64,6 @@ class EventsButtons(discord.ui.View):
         username = str(interaction.user)
 
     # Define embed message templates for D&D downtime events
-
-    def downtime_events_list(self):
-        embed = discord.Embed(title="Downtime events", color=discord.Color.orange())
-        embed.add_field(name="Activity", value="Choose your activity by pressing a button below")
-        return embed
 
     def create_crafting_embed(self):
         embed = discord.Embed(title="Crafting Downtime", color=discord.Color.blue())
@@ -119,3 +113,7 @@ class EventsButtons(discord.ui.View):
         embed.add_field(name="Time", value="Varies depending on research complexity", inline=False)
         embed.set_footer(text="Happy Researching!")
         return embed
+
+
+async def setup(bot):
+    await bot.add_cog(Events(bot))
