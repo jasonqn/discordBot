@@ -43,8 +43,12 @@ class EventsButtons(discord.ui.View):
     async def button_function(self, interaction: discord.Interaction):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
+        user_details = {
+            "user_id": user_id,
+            "username": username
+        }
         dice = self.dice
-
+        self.events.insert_one(user_details, dice)
         await interaction.response.send(dice)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
