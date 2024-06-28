@@ -40,16 +40,18 @@ class EventsButtons(discord.ui.View):
         self.events = events_db
         self.dice = roll_dice(1, 20)
 
-    async def button_function(self, interaction: discord.Interaction):
+    async def button_function(self, interaction: discord.Interaction, event_name: str):
         user_id = str(interaction.user.id)
         username = str(interaction.user)
+        dice = self.dice
         user_details = {
             "user_id": user_id,
-            "username": username
+            "username": username,
+            "dice_roll": dice
         }
-        dice = self.dice
-        self.events.insert_one(user_details, dice)
-        await interaction.response.send(dice)
+
+        # self.events.insert_one(user_details)
+        await interaction.response.send(content=dice)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
     async def crafting_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
