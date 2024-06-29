@@ -19,33 +19,26 @@ class RollCharacter(commands.Cog):
         self.collection = collection
         self.user_id = str
         self.username = str
-        self.character = str
+        self.stats = []
         user_details = {
             "user_id": self.user_id,
             "username": self.username,
-            "Character": self.character
+            "Character": self.stats
         }
 
     @commands.command(name='random')
-    async def character_roll(self, ctx, char_name: str, message: discord.Message):
+    async def character_roll(self, ctx, char_name: str):
         print("character_roll called!")
-        user_id = str(message.author.id)
-        username = str(message.author.name)
-        character = str
-        user_details = {
-            "user_id": user_id,
-            "username": username,
-            "Character": character
-        }
         try:
             # Roll 4d6 discarding the lowest in each instance
-            # Strength roll
+
             strength = no_double_ones()
             dexterity = no_double_ones()
             constitution = no_double_ones()
             intelligence = no_double_ones()
             wisdom = no_double_ones()
             charisma = no_double_ones()
+            self.stats = [strength, dexterity, constitution, intelligence, wisdom, charisma]
 
             # Construct the response
             # response = f"Character Name: {char_name} \n\nStats:\n "
@@ -83,27 +76,23 @@ class CharacterButtons(discord.ui.View):
         self.user_id = str
         self.username = str
         self.character = str
+        self.stats = []
         self.user_details = {
             "user_id": self.user_id,
             "username": self.username,
-            "Character": self.character
+            "Character": self.stats
         }
 
     @discord.ui.button(label="Create Character!", style=discord.ButtonStyle.green)
-    async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        user_id = str(interaction.user.id)
-        username = str(interaction.user)
-        user_details = {
-            "user_id": user_id,
-            "username": username
-        }
-
+    async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button, strength: str,
+                             dexterity: str, constitution: str, intelligence: str, wisdom: str, charisma: str):
         # Check if the user is already registered
-        if user_id in self.registered_users:
+        if self.user_id in self.registered_users:
             return await interaction.response.send(content="You have already created a character!", ephemeral=True)
 
+        self.stats = [strength, dexterity, constitution, intelligence, wisdom, charisma]
         # Add the user to the registered users set
-        self.registered_users.add(user_id)
+        self.registered_users.add(self.user_id)
         self.collection.insert_one(self.user_details)
 
         await interaction.response.send(content=f"{interaction.user} character created successfully!", ephemeral=True)
