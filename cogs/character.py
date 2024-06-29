@@ -3,7 +3,7 @@ import config
 
 import discord
 from discord.ext import commands
-from discord import client
+from discord import client, Intents, Message
 from dice import roll_dice, no_double_ones
 
 clientObj = config.Oauth()
@@ -17,6 +17,14 @@ class RollCharacter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.collection = collection
+        self.user_id = str
+        self.username = str
+        self.character = str
+        user_details = {
+            "user_id": self.user_id,
+            "username": self.username,
+            "Character": self.character
+        }
 
     @commands.command(name='random')
     async def character_roll(self, ctx, char_name: str, message: discord.Message):
@@ -49,8 +57,6 @@ class RollCharacter(commands.Cog):
             response += f"Charisma: {charisma}"
             print(response)
 
-            character = response
-
             embed_character_creator = discord.Embed(title="Character creator",
                                                     description="Please confirm with (yes/no) if you want to keep this"
                                                                 "character.",
@@ -59,21 +65,48 @@ class RollCharacter(commands.Cog):
             embed_character_creator.add_field(name="Character Name ", value=char_name, inline=False)
             embed_character_creator.add_field(name="Stats Rolled: ", value=response, inline=True)
 
-            await ctx.send(embed=embed_character_creator)
+            view = CharacterButtons()
 
-            try:
-                confirmation = await client.wait_for('message', timeout=30.0)
-            except asyncio.TimeoutError:  # returning after timeout
-                return
-
-            if confirmation.content.lower() not in ("yes", "y"):
-                return ctx.send(content="Character not created")
-            else:
-                self.collection.insert_one(user_details)
-                return ctx.send(content="Character created!")
-
+            await ctx.send(embed=embed_character_creator, view=view)
         except Exception as e:
             print(e)
+
+
+class CharacterButtons(discord.ui.View):
+
+    def __init__(self, *, timeout=None):
+        super().__init__(timeout=timeout or 180)
+
+        self.collection = collection
+        self.client = client
+        self.registered_users = set()
+        self.user_id = str
+        self.username = str
+        self.character = str
+        self.user_details = {
+            "user_id": self.user_id,
+            "username": self.username,
+            "Character": self.character
+        }
+
+    @discord.ui.button(label="Create Character!", style=discord.ButtonStyle.green)
+    async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        user_id = str(interaction.user.id)
+        username = str(interaction.user)
+        user_details = {
+            "user_id": user_id,
+            "username": username
+        }
+
+        # Check if the user is already registered
+        if user_id in self.registered_users:
+            return await interaction.response.send(content="You have already created a character!", ephemeral=True)
+
+        # Add the user to the registered users set
+        self.registered_users.add(user_id)
+        self.collection.insert_one(self.user_details)
+
+        await interaction.response.send(content=f"{interaction.user} character created successfully!", ephemeral=True)
 
 
 async def setup(bot):

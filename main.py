@@ -17,7 +17,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 intents: Intents = Intents.default()
 intents.message_content = True  # NOQA
 intents.messages = True  # NOQA
-intents.members = True # NOQA
+intents.members = True  # NOQA
 
 # Bot Command setup
 bot = commands.Bot(command_prefix='!', intents=intents)
