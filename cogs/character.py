@@ -51,7 +51,12 @@ class RollCharacter(commands.Cog):
             intelligence = await self.dice_roll_character()
             wisdom = await self.dice_roll_character()
             charisma = await self.dice_roll_character()
-            stats = [strength, dexterity, constitution, intelligence, wisdom, charisma]
+            stats = {"Strength": strength,
+                     "Dexterity": dexterity,
+                     "Constitution": constitution,
+                     "Intelligence": intelligence,
+                     "Wisdom": wisdom,
+                     "Charisma": charisma}
 
             # Construct the response
             # response = f"Character Name: {char_name} \n\nStats:\n "
