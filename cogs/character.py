@@ -36,9 +36,8 @@ class RollCharacter(commands.Cog):
             new_roll = roll_dice(1, 6)
             stat.insert(0, new_roll)
         lowest_roll = min(stat)
-        self.stat_total = sum(stat) - lowest_roll
-        return (f"{self.stat_total}, you rolled {stat} taking the lowest roll away "
-                f"of : {lowest_roll}\n ")
+        stat_total = sum(stat) - lowest_roll
+        return stat_total
 
     @commands.command(name='random')
     async def character_roll(self, ctx, char_name: str):
@@ -46,13 +45,13 @@ class RollCharacter(commands.Cog):
         try:
             # Roll 4d6 discarding the lowest in each instance
 
-            strength = self.dice_roll_character()
-            dexterity = self.dice_roll_character()
-            constitution = self.dice_roll_character()
-            intelligence = self.dice_roll_character()
-            wisdom = self.dice_roll_character()
-            charisma = self.dice_roll_character()
-            stats = [strength(self.stat_total), dexterity, constitution, intelligence, wisdom, charisma]
+            strength = await self.dice_roll_character()
+            dexterity = await self.dice_roll_character()
+            constitution = await self.dice_roll_character()
+            intelligence = await self.dice_roll_character()
+            wisdom = await self.dice_roll_character()
+            charisma = await self.dice_roll_character()
+            stats = [strength, dexterity, constitution, intelligence, wisdom, charisma]
 
             # Construct the response
             # response = f"Character Name: {char_name} \n\nStats:\n "
@@ -109,7 +108,7 @@ class CharacterButtons(discord.ui.View):
         self.collection.insert_one(user_details)
         print("Character created and stored in database:", user_details)
 
-        await interaction.response.send(content=f"{interaction.user} character created successfully!", ephemeral=True)
+        await interaction.response.send_message(content=f"{interaction.user} character created successfully!", ephemeral=True)
 
     @discord.ui.button(label="Create Character!", style=discord.ButtonStyle.green)
     async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
