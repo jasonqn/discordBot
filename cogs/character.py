@@ -20,11 +20,25 @@ class RollCharacter(commands.Cog):
         self.user_id = str
         self.username = str
         self.stats = []
+        # self.roll = no_double_ones()
+        self.stat_total = 0
         user_details = {
             "user_id": self.user_id,
             "username": self.username,
             "Character": self.stats
         }
+
+    async def dice_roll_character(self):
+        stat = [roll_dice(1, 6) for _ in range(4)]
+        stat.sort()
+        while stat[0] & stat[1] == 1:
+            stat.pop(0)
+            new_roll = roll_dice(1, 6)
+            stat.insert(0, new_roll)
+        lowest_roll = min(stat)
+        self.stat_total = sum(stat) - lowest_roll
+        return (f"{self.stat_total}, you rolled {stat} taking the lowest roll away "
+                f"of : {lowest_roll}\n ")
 
     @commands.command(name='random')
     async def character_roll(self, ctx, char_name: str):
@@ -32,13 +46,13 @@ class RollCharacter(commands.Cog):
         try:
             # Roll 4d6 discarding the lowest in each instance
 
-            strength = no_double_ones()
-            dexterity = no_double_ones()
-            constitution = no_double_ones()
-            intelligence = no_double_ones()
-            wisdom = no_double_ones()
-            charisma = no_double_ones()
-            stats = [strength, dexterity, constitution, intelligence, wisdom, charisma]
+            strength = self.dice_roll_character()
+            dexterity = self.dice_roll_character()
+            constitution = self.dice_roll_character()
+            intelligence = self.dice_roll_character()
+            wisdom = self.dice_roll_character()
+            charisma = self.dice_roll_character()
+            stats = [strength(self.stat_total), dexterity, constitution, intelligence, wisdom, charisma]
 
             # Construct the response
             # response = f"Character Name: {char_name} \n\nStats:\n "
@@ -79,27 +93,28 @@ class CharacterButtons(discord.ui.View):
         self.char_name = char_name
         self.stats = stats
 
-    async def button_logic(self, interaction: discord.Interaction, response: str, char_name: str):
-        if self.user_id in self.registered_users:
-            return await interaction.response.send(content="You have already created a character!", ephemeral=True)
+    async def button_logic(self, interaction: discord.Interaction):
+        print(f"Button clicked by user: {interaction.user.name}")
 
         # Add the user to the registered users set
         self.registered_users.add(self.user_id)
 
         # Insert the user details into the database
         user_details = {
-            "user_id": self.user_id,
-            "username": self.username,
+            "user_id": interaction.user.id,
+            "username": interaction.user.name,
             "char_name": self.char_name,
             "stats": self.stats
         }
         self.collection.insert_one(user_details)
+        print("Character created and stored in database:", user_details)
 
         await interaction.response.send(content=f"{interaction.user} character created successfully!", ephemeral=True)
 
     @discord.ui.button(label="Create Character!", style=discord.ButtonStyle.green)
-    async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button, response: str):
-        await self.button_logic(interaction, "", "")
+    async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.button_logic(interaction)
+        print("button was clicked!")
 
 
 async def setup(bot):
