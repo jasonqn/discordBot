@@ -99,6 +99,10 @@ class CharacterButtons(discord.ui.View):
 
     async def button_logic(self, interaction: discord.Interaction):
         print(f"Button clicked by user: {interaction.user.name}")
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message(content="You cannot confirm this character as you didn't call the "
+                                                            "command")
+            return
 
         # Add the user to the registered users set
         self.registered_users.add(self.user_id)
