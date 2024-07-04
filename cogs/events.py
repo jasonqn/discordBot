@@ -45,7 +45,7 @@ class EventsButtons(discord.ui.View):
             "dice_roll": dice
         }
 
-        # self.events.insert_one(user_details)
+        self.events.insert_one(user_details)
         await interaction.response.send_message(dice)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
