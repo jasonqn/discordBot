@@ -17,16 +17,8 @@ class RollCharacter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.collection = collection
-        self.user_id = str
-        self.username = str
         self.stats = []
-        # self.roll = no_double_ones()
         self.stat_total = 0
-        user_details = {
-            "user_id": self.user_id,
-            "username": self.username,
-            "Character": self.stats
-        }
 
     async def dice_roll_character(self):
         stat = [roll_dice(1, 6) for _ in range(4)]
@@ -90,22 +82,12 @@ class CharacterButtons(discord.ui.View):
         super().__init__(timeout=timeout or 180)
 
         self.collection = collection
-        self.registered_users = set()
-        self.user_id = str
-        self.username = str
         self.character = str
         self.char_name = char_name
         self.stats = stats
 
     async def button_logic(self, interaction: discord.Interaction):
         print(f"Button clicked by user: {interaction.user.name}")
-        if interaction.user.id != self.user_id:
-            await interaction.response.send_message(content="You cannot confirm this character as you didn't call the "
-                                                            "command")
-            return
-
-        # Add the user to the registered users set
-        self.registered_users.add(self.user_id)
 
         # Insert the user details into the database
         user_details = {

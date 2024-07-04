@@ -21,12 +21,7 @@ class Events(commands.Cog):
     @commands.command(name='events')
     async def roll(self, ctx):
         user_id = str(ctx.author.id)
-        user = db.login.find_one({"user_id": user_id})
         buttons = EventsButtons()
-
-        if not user:
-            await ctx.send("You are not registered. Please register first using the !register command.")
-            return
 
         embed = discord.Embed(title="Downtime events", color=discord.Color.orange())
         embed.add_field(name="Activity", value="Choose your activity by pressing a button below")
@@ -38,12 +33,12 @@ class EventsButtons(discord.ui.View):
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)
         self.events = events_db
-        self.dice = roll_dice(1, 20)
 
-    async def button_function(self, interaction: discord.Interaction, event_name: str):
+    async def button_function(self, interaction: discord.Interaction):
+        print(f"Button clicked by user: {interaction.user.name}")
         user_id = str(interaction.user.id)
         username = str(interaction.user)
-        dice = self.dice
+        dice = roll_dice(1, 20)
         user_details = {
             "user_id": user_id,
             "username": username,
@@ -51,27 +46,27 @@ class EventsButtons(discord.ui.View):
         }
 
         # self.events.insert_one(user_details)
-        await interaction.response.send(content=dice)
+        await interaction.response.send_message(dice)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
-    async def crafting_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
+    async def crafting_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.button_function(interaction)
+        print("Button was clicked!")
 
     @discord.ui.button(label="Training", style=discord.ButtonStyle.green)
-    async def training_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
-        return await interaction.response.send()
+    async def training_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.button_function(interaction)
+        print("Button was clicked!")
 
     @discord.ui.button(label="Carousing", style=discord.ButtonStyle.gray)
-    async def carousing_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
-        user_id = str(interaction.user.id)
-        username = str(interaction.user)
+    async def carousing_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.button_function(interaction)
+        print("Button was clicked!")
 
     @discord.ui.button(label="Researching", style=discord.ButtonStyle.red)
-    async def researching_button(self, ctx, interaction: discord.Interaction, button: discord.ui.Button):
-        user_id = str(interaction.user.id)
-        username = str(interaction.user)
-
-    # Define embed message templates for D&D downtime events
+    async def researching_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.button_function(interaction)
+        print("Button was clicked!")
 
     def create_crafting_embed(self):
         embed = discord.Embed(title="Crafting Downtime", color=discord.Color.blue())
