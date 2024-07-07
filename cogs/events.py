@@ -34,7 +34,7 @@ class EventsButtons(discord.ui.View):
         super().__init__(timeout=timeout or 180)
         self.events = events_db
 
-    async def button_function(self, interaction: discord.Interaction):
+    async def button_function(self, interaction: discord.Interaction, activity_name: str):
         print(f"Button clicked by user: {interaction.user.name}")
         user_id = str(interaction.user.id)
         username = str(interaction.user)
@@ -46,29 +46,29 @@ class EventsButtons(discord.ui.View):
         }
 
         self.events.insert_one(user_details)
-        await interaction.response.send_message(dice)
+        await interaction.response.send_message(dice, activity_name)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
     async def crafting_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.button_function(interaction)
+        await self.button_function(interaction, "Crafting")
         print("Button was clicked!")
 
     @discord.ui.button(label="Training", style=discord.ButtonStyle.green)
     async def training_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.button_function(interaction)
+        await self.button_function(interaction, "Training")
         print("Button was clicked!")
 
     @discord.ui.button(label="Carousing", style=discord.ButtonStyle.gray)
     async def carousing_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.button_function(interaction)
+        await self.button_function(interaction, "Carousing")
         print("Button was clicked!")
 
     @discord.ui.button(label="Researching", style=discord.ButtonStyle.red)
     async def researching_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.button_function(interaction)
+        await self.button_function(interaction, "Researching")
         print("Button was clicked!")
 
-    def create_crafting_embed(self):
+    async def create_crafting_embed(self):
         embed = discord.Embed(title="Crafting Downtime", color=discord.Color.blue())
         embed.add_field(name="Activity", value="Crafting", inline=False)
         embed.add_field(name="Description", value="You spend your downtime crafting a new item or weapon.",

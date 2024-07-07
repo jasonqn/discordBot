@@ -34,6 +34,7 @@ class RollCharacter(commands.Cog):
     @commands.command(name='random')
     async def character_roll(self, ctx, char_name: str):
         print("character_roll called!")
+
         try:
             # Roll 4d6 discarding the lowest in each instance
 
@@ -61,7 +62,8 @@ class RollCharacter(commands.Cog):
             print(response)
 
             embed_character_creator = discord.Embed(title="Character creator",
-                                                    description="Please confirm with (yes/no) if you want to keep this"
+                                                    description="Please confirm with (yes/no) if you want to keep "
+                                                                "this"
                                                                 "character.",
                                                     colour=0xf54900)
 
