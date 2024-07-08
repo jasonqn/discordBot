@@ -38,7 +38,7 @@ def roll_dice(select_dice: int, die_face_selection: int):
 def no_double_ones():
     stat = [roll_dice(1, 6) for _ in range(4)]
     stat.sort()
-    while stat[0] & stat[1] == 1:   
+    while stat[0] & stat[1] == 1:
         stat.pop(0)
         new_roll = roll_dice(1, 6)
         stat.insert(0, new_roll)
@@ -55,3 +55,13 @@ def random_stat_roll():
     return f"{stat_total}, you rolled {stat}"
 
 
+async def dice_roll_character():
+    stat = [roll_dice(1, 6) for _ in range(4)]
+    stat.sort()
+    while stat[0] & stat[1] == 1:
+        stat.pop(0)
+        new_roll = roll_dice(1, 6)
+        stat.insert(0, new_roll)
+    lowest_roll = min(stat)
+    stat_total = sum(stat) - lowest_roll
+    return stat_total
