@@ -1,5 +1,5 @@
 import asyncio
-import config
+import database_connection
 
 import discord
 from discord.ext import commands

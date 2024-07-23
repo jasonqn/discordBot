@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from dice import roll_dice
 
-import config
+import database_connection
 
 # import config class for database
 clientObj = config.Oauth()

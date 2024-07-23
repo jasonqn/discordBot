@@ -1,21 +1,16 @@
 import discord
 import time
 from discord.ext import commands
+
+from database.sql_queries import SQLQueries
 from dice import roll_dice
-
-import config
-
-# import config class for database
-clientObj = config.Oauth()
-client = clientObj.databaseCONN()
-db = client.dnd
-events_db = db.events
+import psycopg
 
 
 class Events(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, db_connection):
         self.bot = bot
-        self.collection = events_db
+        self.db_connection = db_connection
 
     @commands.command(name='events')
     async def roll(self, ctx):
@@ -30,10 +25,9 @@ class Events(commands.Cog):
 
 
 class EventsButtons(discord.ui.View):
-
-    def __init__(self, *, timeout=None):
+    def __init__(self, db_connection, *, timeout=None):
         super().__init__(timeout=timeout or 180)
-        self.events = events_db
+        self.db_connection = db_connection
 
     async def button_function(self, interaction: discord.Interaction):
         print(f"Button clicked by user: {interaction.user.name}")
@@ -43,8 +37,11 @@ class EventsButtons(discord.ui.View):
         user_details = {
             "user_id": user_id,
             "username": username,
+            "dice_roll": dice
         }
-        self.events.insert_one(user_details, dice)
+        with self.db_connection.cursor() as cursor:
+            cursor.execute(SQLQueries.INSERT_EVENT, (user_id, "Some Event", dice))
+            self.db_connection.commit()
         await interaction.response.send_message(f"You rolled a {dice}!", ephemeral=True)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
@@ -53,7 +50,7 @@ class EventsButtons(discord.ui.View):
         print("Button was clicked!")
 
     @discord.ui.button(label="Training", style=discord.ButtonStyle.green)
-    async def training_button(self, interaction:     discord.Interaction, button: discord.ui.Button):
+    async def training_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.button_function(interaction)
         print("Button was clicked!")
 

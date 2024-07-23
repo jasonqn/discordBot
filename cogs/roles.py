@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.components import *
-import config
+import database_connection
 
 # import config class for database
 clientObj = config.Oauth()
