@@ -7,19 +7,12 @@ import pymongo
 
 from cogs.roles import *
 
-# import config class for database
-clientObj = config.Oauth()
-client = clientObj.databaseCONN()
-db = client.dnd
-collection = db.login
-
 
 class PlayerRegistration(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         self.last_member = None
-        self.collection = collection
 
     @commands.command(name="register")
     async def register(self, ctx):
@@ -66,9 +59,6 @@ class RegisterButtons(discord.ui.View):
 
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout or 180)
-
-        self.collection = collection
-        self.client = client
         self.registered_users = set()
 
     @discord.ui.button(label="Register", style=discord.ButtonStyle.green)

@@ -3,18 +3,12 @@ from discord.ext import commands
 from discord.components import *
 import database_connection
 
-# import config class for database
-clientObj = config.Oauth()
-client = clientObj.databaseCONN()
-db = client.dnd
-
 
 class Roles(commands.Cog):
 
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
-        self.db = db
         self.role_names = ["Paladin", "Fighter", "Barbarian",
                            "Bard", "Cleric", "Druid",
                            "Monk", "Ranger", "Rogue",
@@ -39,8 +33,9 @@ class Roles(commands.Cog):
 
 class RoleButtons(discord.ui.View):
 
-    def __init__(self, *, timeout=None):
+    def __init__(self, db_connection, *, timeout=None):
         super().__init__(timeout=timeout or 180)
+        self.db_connection = db_connection
         self.permissions = discord.Permissions(send_messages=True,
                                                speak=True,
                                                stream=True,

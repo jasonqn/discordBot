@@ -2,30 +2,20 @@ from random import randint
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
+
+from database.sql_queries import SQLQueries
 from dice import roll_dice
 
 import database_connection
-
-# import config class for database
-clientObj = config.Oauth()
-client = clientObj.databaseCONN()
-db = client.dnd
-collection = db.dice_rolls
 
 
 class DiceCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.collection = collection
 
     @commands.command(name='roll')
     async def roll(self, ctx, select_dice: int, die_face_selection: int):
         user_id = str(ctx.author.id)
-        user = db.login.find_one({"user_id": user_id})
-
-        if not user:
-            await ctx.send("You are not registered. Please register first using the !register command.")
-            return
 
         try:
             response = roll_dice(select_dice, die_face_selection)
@@ -34,7 +24,9 @@ class DiceCog(commands.Cog):
                 "username": ctx.author.name,
                 "rolls": response
             }
-            self.collection.insert_one(roll_entry)
+            with self.db_connection.cursor() as cursor:
+                cursor.execute(SQLQueries.INSERT_EVENT, (roll_entry, "Some Event"))
+                self.db_connection.commit()
 
             await ctx.send(response)
         except Exception as e:

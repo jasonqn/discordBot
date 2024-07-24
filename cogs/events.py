@@ -8,9 +8,8 @@ import psycopg
 
 
 class Events(commands.Cog):
-    def __init__(self, bot, db_connection):
+    def __init__(self, bot):
         self.bot = bot
-        self.db_connection = db_connection
 
     @commands.command(name='events')
     async def roll(self, ctx):
