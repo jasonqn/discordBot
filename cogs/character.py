@@ -9,14 +9,8 @@ import discord
 from discord.ext import commands
 from discord import client, Intents, Message
 from dice import *
-from database.sql_queries import SQLQueries
-from database_connection import databaseCONN, Oauth
+from database.sql_queries import create_db_pool, CreateCharacters
 import psycopg
-
-# Load environment variables
-load_dotenv()
-
-db_connection = databaseCONN()
 
 
 class RollCharacter(commands.Cog):
@@ -67,7 +61,7 @@ class RollCharacter(commands.Cog):
             embed_character_creator.add_field(name="Stats Rolled: ", value=response, inline=True)
 
             view = CharacterButtons(user_id=str(ctx.author.id), username=str(ctx.author), char_name=char_name,
-                                    stats=stats, connection=self.connection)
+                                    stats=stats, connection=self.db_connection)
 
             await ctx.send(embed=embed_character_creator, view=view)
         except Exception as e:
@@ -94,18 +88,12 @@ class CharacterButtons(discord.ui.View):
             "char_name": self.char_name,
             "stats": self.stats
         }
-        try:
-            with self.db_connection.cursor() as cursor:
-                cursor.execute(SQLQueries.INSERT_CHARACTER,
-                               (self.user_id, self.username, self.char_name, str(self.stats)))
-                self.db_connection.commit()
-            print("Character created and stored in database:", user_details)
-            await interaction.response.send_message(content=f"{interaction.user} character created successfully!",
-                                                    ephemeral=True)
-        except Exception as e:
-            print(f"Error inserting character into database: {e}")
-            await interaction.response.send_message(
-                content="There was an error creating your character. Please try again.", ephemeral=True)
+
+        async with self.db_connection.acquire() as connection:
+            await connection.execute(CreateCharacters.INSERT_CHARACTER, *user_details.values())
+        print("Character created and stored in database:", user_details)
+        await interaction.response.send_message(content=f"{interaction.user} character created successfully!",
+                                                ephemeral=True)
 
     @discord.ui.button(label="Create Character!", style=discord.ButtonStyle.green)
     async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -115,8 +103,5 @@ class CharacterButtons(discord.ui.View):
 
 # Initialize bot and add cogs
 async def setup(bot):
-    connection = databaseCONN()
-    if connection:
-        await bot.add_cog(RollCharacter(bot, connection))
-    else:
-        print("Failed to connect to the database. Cog not added.")
+    db_pool = await create_db_pool()
+    await bot.add_cog(RollCharacter(bot, db_pool))

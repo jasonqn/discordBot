@@ -2,7 +2,7 @@ import discord
 import time
 from discord.ext import commands
 
-from database.sql_queries import SQLQueries
+from database.sql_queries import create_db_pool, CreateCharacters
 from dice import roll_dice
 import psycopg
 
@@ -38,9 +38,7 @@ class EventsButtons(discord.ui.View):
             "username": username,
             "dice_roll": dice
         }
-        with self.db_connection.cursor() as cursor:
-            cursor.execute(SQLQueries.INSERT_EVENT, (user_id, "Some Event", dice))
-            self.db_connection.commit()
+
         await interaction.response.send_message(f"You rolled a {dice}!", ephemeral=True)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)

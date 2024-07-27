@@ -16,23 +16,10 @@ connection_string = (
     f"dbname={DATABASE_NAME} user={DATABASE_USERNAME} password={DATABASE_PASSWORD} host={DATABASE_HOST}"
     f" port={DATABASE_PORT}")
 
-CREATE_CHARACTERS_TABLE = """
-CREATE TABLE IF NOT EXISTS characters (
-    user_id VARCHAR(50),
-    username VARCHAR(50),
-    char_name VARCHAR(50),
-    stats JSONB
-);
-"""
-
 
 def databaseCONN():
     try:
         connection = psycopg.connect(connection_string)
-        cursor = connection.cursor()
-        cursor.execute(CREATE_CHARACTERS_TABLE)
-        connection.commit()
-        cursor.close()
         print("Connection to PostgreSQL DB successful and table ensured.")
         return connection
     except Exception as error:

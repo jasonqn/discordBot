@@ -3,15 +3,16 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
 
-from database.sql_queries import SQLQueries
+from database.sql_queries import create_db_pool, CreateCharacters
 from dice import roll_dice
 
 import database_connection
 
 
 class DiceCog(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, db_connection):
         self.bot = bot
+        self.connection = db_connection
 
     @commands.command(name='roll')
     async def roll(self, ctx, select_dice: int, die_face_selection: int):
@@ -24,9 +25,8 @@ class DiceCog(commands.Cog):
                 "username": ctx.author.name,
                 "rolls": response
             }
-            with self.db_connection.cursor() as cursor:
-                cursor.execute(SQLQueries.INSERT_EVENT, (roll_entry, "Some Event"))
-                self.db_connection.commit()
+            async with self.connection.acquire() as connection:
+                await connection.execute()
 
             await ctx.send(response)
         except Exception as e:
@@ -34,4 +34,5 @@ class DiceCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(DiceCog(bot))
+    db_pool = await create_db_pool()
+    await bot.add_cog(DiceCog(bot, db_pool))
