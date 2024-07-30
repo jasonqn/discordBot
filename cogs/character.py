@@ -1,16 +1,8 @@
-import asyncio
-
-from dotenv import load_dotenv
-from psycopg.rows import dict_row
-
-import database_connection
-import os
 import discord
 from discord.ext import commands
-from discord import client, Intents, Message
+
+from database.sql_queries import create_db_pool, CreateCharacters, CreateUsers
 from dice import *
-from database.sql_queries import create_db_pool, CreateCharacters
-import psycopg
 
 
 class RollCharacter(commands.Cog):
@@ -49,6 +41,7 @@ class RollCharacter(commands.Cog):
             response += f"Intelligence: {intelligence}\n"
             response += f"Wisdom: {wisdom}\n"
             response += f"Charisma: {charisma}"
+            response = "\n".join([f"{key}: {value}" for key, value in stats.items()])
             print(response)
 
             embed_character_creator = discord.Embed(title="Character creator",
@@ -61,7 +54,7 @@ class RollCharacter(commands.Cog):
             embed_character_creator.add_field(name="Stats Rolled: ", value=response, inline=True)
 
             view = CharacterButtons(user_id=str(ctx.author.id), username=str(ctx.author), char_name=char_name,
-                                    stats=stats, connection=self.db_connection)
+                                    stats=stats, db_connection=self.db_connection)
 
             await ctx.send(embed=embed_character_creator, view=view)
         except Exception as e:
@@ -70,10 +63,10 @@ class RollCharacter(commands.Cog):
 
 class CharacterButtons(discord.ui.View):
 
-    def __init__(self, user_id, username, char_name, stats, connection, *, timeout=None):
+    def __init__(self, user_id, username, char_name, stats, db_connection, *, timeout=None):
         super().__init__(timeout=timeout or 180)
-        self.db_connection = connection
-        self.user_id = user_id
+        self.db_connection = db_connection
+        self.user_id = int(user_id)
         self.username = username
         self.char_name = char_name
         self.stats = stats
@@ -82,18 +75,30 @@ class CharacterButtons(discord.ui.View):
         print(f"Button clicked by user: {interaction.user.name}")
 
         # Insert the user details into the database
-        user_details = {
-            "user_id": interaction.user.id,
-            "username": interaction.user.name,
-            "char_name": self.char_name,
-            "stats": self.stats
-        }
+        user_details = [
+            self.user_id,
+            self.username,
+            self.char_name,
+            self.stats["Strength"],
+            self.stats["Dexterity"],
+            self.stats["Constitution"],
+            self.stats["Intelligence"],
+            self.stats["Wisdom"],
+            self.stats["Charisma"]
+        ]
 
-        async with self.db_connection.acquire() as connection:
-            await connection.execute(CreateCharacters.INSERT_CHARACTER, *user_details.values())
-        print("Character created and stored in database:", user_details)
-        await interaction.response.send_message(content=f"{interaction.user} character created successfully!",
-                                                ephemeral=True)
+        try:
+            async with self.db_connection.acquire() as connection:
+                print(f"Connection made")
+                await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
+                await connection.execute(CreateCharacters.INSERT_CHARACTER, *user_details)
+                print(f"HI DADDY")
+            print("Character created and stored in database:", user_details)
+            await interaction.response.send_message(content=f"{interaction.user} character created successfully!",
+                                                    ephemeral=True)
+        except Exception as e:
+            print(f"Error inserting character into database: {e}")
+            await interaction.response.send_message(content=f"Failed to create character: {e}", ephemeral=True)
 
     @discord.ui.button(label="Create Character!", style=discord.ButtonStyle.green)
     async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -103,5 +108,5 @@ class CharacterButtons(discord.ui.View):
 
 # Initialize bot and add cogs
 async def setup(bot):
-    db_pool = await create_db_pool()
-    await bot.add_cog(RollCharacter(bot, db_pool))
+    db_connection = await create_db_pool()
+    await bot.add_cog(RollCharacter(bot, db_connection))

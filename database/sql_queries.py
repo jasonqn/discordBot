@@ -7,39 +7,41 @@ load_dotenv()
 DATABASE_USERNAME = os.getenv('DATABASE_USERNAME')
 DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
 DATABASE_HOST = os.getenv('DATABASE_HOST')
-DATABASE_PORT = os.getenv('DATABASE_PORT', '5432')
+DATABASE_PORT = os.getenv('DATABASE_PORT')
 DATABASE_NAME = os.getenv('DATABASE_NAME')
 
 
 async def create_db_pool():
-    return await asyncpg.create_pool(
+    connection = await asyncpg.create_pool(
         user=DATABASE_USERNAME,
         password=DATABASE_PASSWORD,
         host=DATABASE_HOST,
         port=DATABASE_PORT,
         database=DATABASE_NAME
     )
+    print("Connection pool created successfully. DADDY")
+    return connection
 
 
 class CreateUsers:
     CREATE_TABLE_USERS = """
         CREATE TABLE IF NOT EXISTS users(
-        user_id BIGSERIAL PRIMARY KEY NOT NULL,
+        user_id BIGSERIAL PRIMARY KEY,
         username VARCHAR(255) NOT NULL
         );
         """
 
     INSERT_USER = """
     INSERT INTO users (username, user_id) 
-    VALUES (%s, %s) 
-    RETURNING id;
+    VALUES ($1, $2) 
+    RETURNING user_id;
     """
 
 
 class CreateCharacters:
     CREATE_TABLE_CHARACTERS = """
        CREATE TABLE IF NOT EXISTS characters (
-           user_id VARCHAR(255) PRIMARY KEY,
+           user_id BIGSERIAL PRIMARY KEY,
            username VARCHAR(255) NOT NULL,
            char_name VARCHAR(255) NOT NULL,
            strength INTEGER NOT NULL,
@@ -47,7 +49,11 @@ class CreateCharacters:
            constitution INTEGER NOT NULL,
            intelligence INTEGER NOT NULL,
            wisdom INTEGER NOT NULL,
-           charisma INTEGER NOT NULL
+           charisma INTEGER NOT NULL,
+           CONSTRAINT fk_user
+               FOREIGN KEY(user_id) 
+               REFERENCES users(user_id)
+               ON DELETE CASCADE
        );
        """
 
@@ -58,6 +64,17 @@ class CreateCharacters:
        """
 
 
-INSERT_EVENT = "INSERT INTO events (user_id, event_name, dice_roll) VALUES (%s, %s, %s) RETURNING id;"
-CHECK_USER = "SELECT * FROM users WHERE user_id = %s;"
-INSERT_CHARACTER = "INSERT INTO characters (user_id, username, char_name, stats) VALUES (%s, %s, %s, %s);"
+INSERT_EVENT = "INSERT INTO events (user_id, event_name, dice_roll) VALUES ($1, $2, $3) RETURNING id;"
+CHECK_USER = "SELECT * FROM users WHERE user_id = $1;"
+
+
+# Example usage for testing connection and table creation
+async def initialize_db():
+    pool = await create_db_pool()
+    async with pool.acquire() as connection:
+        await connection.execute(CreateUsers.CREATE_TABLE_USERS)
+        await connection.execute(CreateCharacters.CREATE_TABLE_CHARACTERS)
+        print("Tables created successfully.")
+
+
+

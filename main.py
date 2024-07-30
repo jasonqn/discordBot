@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from discord import Intents, Message
 from discord.ext import commands
+from database.sql_queries import initialize_db
 import sys
 from cogs import dicecog
 
@@ -60,6 +61,14 @@ async def on_message(message: Message) -> None:
 
 
 async def main() -> None:
+    # Initialize the database
+    try:
+        db_connection = await initialize_db()
+        bot.db_connection = db_connection  # Pass the db connection to the bot instance
+    except Exception as e:
+        print(f"Failed to initialize database: {e}")
+        return
+
     await setup_hook()
     await bot.start(TOKEN)
 
