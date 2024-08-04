@@ -37,6 +37,18 @@ class CreateUsers:
     RETURNING user_id;
     """
 
+class CreateDice:
+    CREATE_TABLE_DICE = """
+    CREATE TABLE IF NOT EXISTS dice(
+    user_id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_user
+               FOREIGN KEY(user_id) 
+               REFERENCES users(user_id)
+               ON DELETE CASCADE
+    
+    )
+    """
 
 class CreateCharacters:
     CREATE_TABLE_CHARACTERS = """

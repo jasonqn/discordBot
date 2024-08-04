@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 
 from discord import Message
-import pymongo
 
 from cogs.roles import *
 

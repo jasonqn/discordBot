@@ -90,7 +90,7 @@ class CharacterButtons(discord.ui.View):
         try:
             async with self.db_connection.acquire() as connection:
                 print(f"Connection made")
-                await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
+                # await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
                 await connection.execute(CreateCharacters.INSERT_CHARACTER, *user_details)
                 print(f"HI DADDY")
             print("Character created and stored in database:", user_details)
