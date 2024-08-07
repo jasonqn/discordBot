@@ -37,6 +37,7 @@ class CreateUsers:
     RETURNING user_id;
     """
 
+
 class CreateDice:
     CREATE_TABLE_DICE = """
     CREATE TABLE IF NOT EXISTS dice(
@@ -48,6 +49,11 @@ class CreateDice:
                ON DELETE CASCADE
     
     )
+    """
+
+    INSERT_DICE = """
+    INSERT INTO dice (user_id, username,
+    
     """
 
 class CreateCharacters:
@@ -87,6 +93,3 @@ async def initialize_db():
         await connection.execute(CreateUsers.CREATE_TABLE_USERS)
         await connection.execute(CreateCharacters.CREATE_TABLE_CHARACTERS)
         print("Tables created successfully.")
-
-
-
