@@ -41,25 +41,29 @@ class CreateUsers:
 class CreateDice:
     CREATE_TABLE_DICE = """
     CREATE TABLE IF NOT EXISTS dice(
-    user_id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
+    rolls INTEGER NOT NULL,
     CONSTRAINT fk_user
                FOREIGN KEY(user_id) 
                REFERENCES users(user_id)
                ON DELETE CASCADE
     
-    )
+    );
     """
 
     INSERT_DICE = """
-    INSERT INTO dice (user_id, username,
+    INSERT INTO dice (user_id, username, rolls)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (user_id) DO NOTHING;
     
     """
+
 
 class CreateCharacters:
     CREATE_TABLE_CHARACTERS = """
        CREATE TABLE IF NOT EXISTS characters (
-           user_id BIGSERIAL PRIMARY KEY,
+           user_id BIGINT PRIMARY KEY,
            username VARCHAR(255) NOT NULL,
            char_name VARCHAR(255) NOT NULL,
            strength INTEGER NOT NULL,
@@ -92,4 +96,5 @@ async def initialize_db():
     async with pool.acquire() as connection:
         await connection.execute(CreateUsers.CREATE_TABLE_USERS)
         await connection.execute(CreateCharacters.CREATE_TABLE_CHARACTERS)
+        await connection.execute(CreateDice.CREATE_TABLE_DICE)
         print("Tables created successfully.")
