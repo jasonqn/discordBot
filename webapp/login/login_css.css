@@ -1,0 +1,10 @@
+
+/* styles.css */
+body {
+    background-image: url('/webapp/images/Tavern Landing Page.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
+}

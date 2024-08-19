@@ -2,7 +2,7 @@ from zenora import APIClient
 from nicegui import Tailwind, ui
 from nicegui import native, ui
 from nicegui import app, ui
-import config
+from webapp import config
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import app, Client
@@ -11,6 +11,9 @@ discordClient = APIClient(config.TOKEN, client_secret=config.CLIENT_SECRET)
 discordId = ''  # Leave empty
 discordName = ''  # Leave empty
 
+# Serve static files
+app.add_static_files('/images', 'C:\\Users\\Jason\\finance\\discordBot\\webapp\\images')
+
 
 def logOut():
     ui.open('/')
@@ -18,6 +21,9 @@ def logOut():
 
 @ui.page('/')
 async def main_page(client: Client):
+    # Link the external CSS file
+    ui.add_head_html('<link rel="stylesheet" href="/login/login_css.css">')
+
     await client.connected()
 
     with ui.card().classes('absolute-center'):
