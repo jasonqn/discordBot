@@ -6,13 +6,18 @@ from webapp import config
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import app, Client
+from webapp.login import login_css as css
+from pathlib import Path
+
+folder = Path(__file__).parent
 
 discordClient = APIClient(config.TOKEN, client_secret=config.CLIENT_SECRET)
 discordId = ''  # Leave empty
 discordName = ''  # Leave empty
 
+
 # Serve static files
-app.add_static_files('/images', 'C:\\Users\\Jason\\finance\\discordBot\\webapp\\images')
+app.add_static_files('/webapp/images', 'images')
 
 
 def logOut():
@@ -22,7 +27,7 @@ def logOut():
 @ui.page('/')
 async def main_page(client: Client):
     # Link the external CSS file
-    ui.add_head_html('<link rel="stylesheet" href="/login/login_css.css">')
+    ui.query('body').classes(css.set_background())
 
     await client.connected()
 
