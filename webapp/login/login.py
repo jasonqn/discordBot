@@ -27,7 +27,8 @@ def logOut():
 @ui.page('/')
 async def main_page(client: Client):
     # Link the external CSS file
-    ui.query('body').classes(css.set_background())
+    ui.add_css(css.set_background())
+    ui.add_css(css.background_image())
 
     await client.connected()
 
