@@ -32,32 +32,31 @@ class CreateUsers:
         """
 
     INSERT_USER = """
-    INSERT INTO users (username, user_id) 
-    VALUES ($1, $2) 
-    RETURNING user_id;
-    """
+        INSERT INTO users (username, user_id) 
+        VALUES ($1, $2) 
+        RETURNING user_id;
+        """
 
 
 class CreateDice:
     CREATE_TABLE_DICE = """
-    CREATE TABLE IF NOT EXISTS dice(
-    user_id BIGINT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    rolls INTEGER NOT NULL,
-    CONSTRAINT fk_user
-               FOREIGN KEY(user_id) 
-               REFERENCES users(user_id)
-               ON DELETE CASCADE
+        CREATE TABLE IF NOT EXISTS dice(
+        user_id BIGINT PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
+        rolls INTEGER NOT NULL,
+        CONSTRAINT fk_user
+                   FOREIGN KEY(user_id) 
+                   REFERENCES users(user_id)
+                   ON DELETE CASCADE
     
-    );
-    """
+        );
+        """
 
     INSERT_DICE = """
-    INSERT INTO dice (user_id, username, rolls)
-    VALUES ($1, $2, $3)
-    ON CONFLICT (user_id) DO NOTHING;
-    
-    """
+        INSERT INTO dice (user_id, username, rolls)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id) DO NOTHING;
+        """
 
 
 class CreateCharacters:
@@ -88,6 +87,28 @@ class CreateCharacters:
 
 INSERT_EVENT = "INSERT INTO events (user_id, event_name, dice_roll) VALUES ($1, $2, $3) RETURNING id;"
 CHECK_USER = "SELECT * FROM users WHERE user_id = $1;"
+
+
+class WebAppLogin:
+    CREATE_TABLE_WEBAPP_LOGINS = """
+        CREATE TABLE IF NOT EXISTS webapp_logins (
+            user_id BIGINT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+            username VARCHAR(255) NOT NULL
+        );
+        """
+
+    INSERT_USER = """
+        INSERT INTO webapp_logins (user_id, username)
+        VALUES ($1, $2) 
+        RETURNING user_id;
+        """
+
+    USER_CHECK = """
+        SELECT u.user_id, u.username AS user_username, w.username AS login_username
+        FROM users u
+        JOIN webapp_logins w ON u.user_id = w.user_id
+        WHERE u.user_id = YOUR_USER_ID;
+        """
 
 
 # Example usage for testing connection and table creation

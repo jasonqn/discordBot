@@ -8,6 +8,7 @@ from urllib.parse import parse_qs
 from nicegui import app, Client
 from webapp.login import login_css as css
 from pathlib import Path
+from database.sql_queries import create_db_pool, WebAppLogin
 
 folder = Path(__file__).parent
 
@@ -24,26 +25,41 @@ def logOut():
     ui.open('/')
 
 
-@ui.page('/')
-async def main_page(client: Client):
-    # Link the external CSS file
-    ui.add_css(css.set_background())
-    ui.add_css(css.background_image())
+class LoginPage:
+    @ui.page('/')
+    async def main_page(self, client: Client):
+        # Link the external CSS file
+        ui.add_css(css.set_background())
+        ui.add_css(css.background_image())
 
-    await client.connected()
+        await client.connected()
 
-    with ui.card().classes('absolute-center'):
-        with ui.link(target=config.OAUTH_URL):  # Button that links us to our Oauth Link.
-            ui.button('Log in')
+        with ui.card().classes('absolute-center'):
+            with ui.link(target=config.OAUTH_URL):  # Button that links us to our Oauth Link.
+                ui.button('Log in')
 
 
-@ui.page('/logged_in')
-async def app_page(client: Client):
-    await client.connected()
-    with ui.card().classes('absolute-center'):
-        ui.label('Logged In.')
-        ui.label(f' Welcome Back: {discordName}')  # Show our new Discord Name
-        ui.button('Log Out', on_click=logOut)
+class HomePage:
+
+    def __init__(self, db_connection):
+        self.db_connection = db_connection
+
+    @ui.page('/home')
+    async def app_page(self, client: Client):
+        await client.connected()
+        try:
+            async with self.db_connection.acquire() as connection:
+                print(f"Connection made")
+                # await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
+                await connection.execute(WebAppLogin.CREATE_TABLE_WEBAPP_LOGINS)
+            print("")
+
+        except Exception as e:
+            print(f"Error inserting character into database: {e}")
+        with ui.card().classes('absolute-center'):
+            ui.label('Logged In.')
+            ui.label(f' Welcome Back: {discordName}')  # Show our new Discord Name
+            ui.button('Log Out', on_click=logOut)
 
 
 @ui.page('/oauth/callback')  # Set up a page for Oauth Callback
@@ -59,9 +75,9 @@ async def index(client: Client):
         current_user = bearer_client.users.get_current_user()  # Our logged in user
         global discordName
         global discordId
-        discordName = current_user.username  # set Discord name string to our current user name
+        discordName = current_user.username  # set Discord name string to our current username
         discordId = current_user.id  # set Discord name string to our current user id
-        ui.open('/logged_in')  # Open logged in
+        ui.open('/home')  # Open logged in
     except Exception as e:
         print(e)
         ui.notify(f'Error Encountered: {e}')  # Catch error.
