@@ -16,9 +16,12 @@ discordClient = APIClient(config.TOKEN, client_secret=config.CLIENT_SECRET)
 discordId = ''  # Leave empty
 discordName = ''  # Leave empty
 
-
 # Serve static files
 app.add_static_files('/webapp/images', 'images')
+
+# Future Jay, you're having trouble because you have put this into a class. Possibly try making the db connection
+# its own function or if you use classes make the db connection a static function outside of a class and just
+# pull it in as needed :)
 
 
 def logOut():
@@ -26,6 +29,10 @@ def logOut():
 
 
 class LoginPage:
+
+    def __init__(self) -> None:
+        return
+
     @ui.page('/')
     async def main_page(self, client: Client):
         # Link the external CSS file
@@ -33,6 +40,7 @@ class LoginPage:
         ui.add_css(css.background_image())
 
         await client.connected()
+        print("login page connected")
 
         with ui.card().classes('absolute-center'):
             with ui.link(target=config.OAUTH_URL):  # Button that links us to our Oauth Link.
@@ -41,25 +49,26 @@ class LoginPage:
 
 class HomePage:
 
-    def __init__(self, db_connection):
+    def __init__(self, db_connection) -> None:
         self.db_connection = db_connection
 
     @ui.page('/home')
     async def app_page(self, client: Client):
         await client.connected()
-        try:
-            async with self.db_connection.acquire() as connection:
-                print(f"Connection made")
-                # await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
-                await connection.execute(WebAppLogin.CREATE_TABLE_WEBAPP_LOGINS)
-            print("")
 
-        except Exception as e:
-            print(f"Error inserting character into database: {e}")
         with ui.card().classes('absolute-center'):
             ui.label('Logged In.')
             ui.label(f' Welcome Back: {discordName}')  # Show our new Discord Name
             ui.button('Log Out', on_click=logOut)
+            try:
+                async with self.db_connection.acquire() as connection:
+                    print(f"Connection made")
+                    # await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
+                    await connection.execute(WebAppLogin.CREATE_TABLE_WEBAPP_LOGINS)
+                print("")
+
+            except Exception as e:
+                print(f"Error inserting character into database: {e}")
 
 
 @ui.page('/oauth/callback')  # Set up a page for Oauth Callback
