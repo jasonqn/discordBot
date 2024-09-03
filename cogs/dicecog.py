@@ -1,12 +1,7 @@
-from random import randint
-import discord
 from discord.ext import commands
-from discord.ext.commands import Cog
 
 from database.sql_queries import create_db_pool, CreateDice
 from dice import roll_dice
-
-import database_connection
 
 
 class DiceCog(commands.Cog):

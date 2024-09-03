@@ -1,14 +1,14 @@
-from zenora import APIClient
-from nicegui import Tailwind, ui
-from nicegui import native, ui
-from nicegui import app, ui
-from webapp import config
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
-from nicegui import app, Client
-from webapp.login import login_css as css
 from pathlib import Path
-from database.sql_queries import create_db_pool, WebAppLogin
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
+
+from nicegui import app, Client
+from nicegui import ui
+from zenora import APIClient
+
+from database.sql_queries import WebAppLogin
+from webapp import config
+from webapp.login import login_css as css
 
 folder = Path(__file__).parent
 
@@ -19,8 +19,9 @@ discordName = ''  # Leave empty
 # Serve static files
 app.add_static_files('/webapp/images', 'images')
 
+
 # Future Jay, you're having trouble because you have put this into a class. Possibly try making the db connection
-# its own function or if you use classes make the db connection a static function outside of a class and just
+# its own function or if you use classes make the db connection a static function outside a class and just
 # pull it in as needed :)
 
 
@@ -28,47 +29,40 @@ def logOut():
     ui.open('/')
 
 
-class LoginPage:
+@ui.page('/')
+async def main_page(client: Client):
+    # Link the external CSS file
+    ui.add_css(css.set_background())
+    ui.add_css(css.background_image())
 
-    def __init__(self) -> None:
-        return
+    await client.connected()
+    print("login page connected")
 
-    @ui.page('/')
-    async def main_page(self, client: Client):
-        # Link the external CSS file
-        ui.add_css(css.set_background())
-        ui.add_css(css.background_image())
-
-        await client.connected()
-        print("login page connected")
-
-        with ui.card().classes('absolute-center'):
-            with ui.link(target=config.OAUTH_URL):  # Button that links us to our Oauth Link.
-                ui.button('Log in')
+    with ui.card().classes('absolute-center'):
+        with ui.link(target=config.OAUTH_URL):  # Button that links us to our Oauth Link.
+            ui.button('Log in')
 
 
-class HomePage:
+@ui.page('/home')
+async def app_page(client: Client):
 
-    def __init__(self, db_connection) -> None:
-        self.db_connection = db_connection
 
-    @ui.page('/home')
-    async def app_page(self, client: Client):
-        await client.connected()
 
-        with ui.card().classes('absolute-center'):
-            ui.label('Logged In.')
-            ui.label(f' Welcome Back: {discordName}')  # Show our new Discord Name
-            ui.button('Log Out', on_click=logOut)
-            try:
-                async with self.db_connection.acquire() as connection:
-                    print(f"Connection made")
-                    # await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
-                    await connection.execute(WebAppLogin.CREATE_TABLE_WEBAPP_LOGINS)
-                print("")
+    await client.connected()
 
-            except Exception as e:
-                print(f"Error inserting character into database: {e}")
+    with ui.card().classes('absolute-center'):
+        ui.label('Logged In.')
+        ui.label(f' Welcome Back: {discordName}')  # Show our new Discord Name
+        ui.button('Log Out', on_click=logOut)
+    try:
+        async with db_connection.acquire() as connection:
+            print(f"Connection made")
+            # await connection.execute(CreateUsers.INSERT_USER, self.username, self.user_id)
+            await connection.execute(WebAppLogin.CREATE_TABLE_WEBAPP_LOGINS)
+        print("")
+
+    except Exception as e:
+        print(f"Error inserting character into database: {e}")
 
 
 @ui.page('/oauth/callback')  # Set up a page for Oauth Callback
