@@ -46,8 +46,6 @@ async def main_page(client: Client):
 @ui.page('/home')
 async def app_page(client: Client):
 
-
-
     await client.connected()
 
     with ui.card().classes('absolute-center'):
