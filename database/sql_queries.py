@@ -85,7 +85,20 @@ class CreateCharacters:
        """
 
 
-INSERT_EVENT = "INSERT INTO events (user_id, event_name, dice_roll) VALUES ($1, $2, $3) RETURNING id;"
+class Events:
+    CREATE_TABLE_EVENTS = """
+        CREATE TABLE IF NOT EXISTS events (
+            user_id BIGINT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+            username VARCHAR(255) NOT NULL,
+            dice INTEGER NOT NULL
+            ON CONFLICT (user_id) DO NOTHING;
+        
+        ); 
+    """
+
+    INSERT_EVENT = "INSERT INTO events (user_id, event_name, dice_roll) VALUES ($1, $2, $3) RETURNING id;"
+
+
 CHECK_USER = "SELECT * FROM users WHERE user_id = $1;"
 
 

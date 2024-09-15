@@ -2,7 +2,7 @@ import discord
 import time
 from discord.ext import commands
 
-from database.sql_queries import create_db_pool, CreateCharacters
+from database.sql_queries import *
 from dice import roll_dice
 import psycopg
 
@@ -38,6 +38,17 @@ class EventsButtons(discord.ui.View):
             "username": username,
             "dice_roll": dice
         }
+
+        try:
+            async with self.db_connection.acquire() as connection:
+                print(f"Connection made")
+                await connection.execute(Events.INSERT_EVENT, *user_details)
+            print("Character created and stored in database:", user_details)
+            await interaction.response.send_message(content=f"{interaction.user} character created successfully!",
+                                                    ephemeral=True)
+        except Exception as e:
+            print(f"Error inserting character into database: {e}")
+            await interaction.response.send_message(content=f"Failed to create character: {e}", ephemeral=True)
 
         await interaction.response.send_message(f"You rolled a {dice}!", ephemeral=True)
 
