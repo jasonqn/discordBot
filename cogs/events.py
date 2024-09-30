@@ -28,29 +28,32 @@ class EventsButtons(discord.ui.View):
         super().__init__(timeout=timeout or 180)
         self.db_connection = db_connection
 
-    async def button_function(self, interaction: discord.Interaction):
+    async def button_function(self, event, interaction: discord.Interaction):
         print(f"Button clicked by user: {interaction.user.name}")
         user_id = str(interaction.user.id)
         username = str(interaction.user)
         dice = roll_dice(1, 20)
+        event = event
         user_details = {
             "user_id": user_id,
             "username": username,
-            "dice_roll": dice
+            "dice_roll": dice,
+            "event": event
         }
 
         try:
             async with self.db_connection.acquire() as connection:
                 print(f"Connection made")
                 await connection.execute(Events.INSERT_EVENT, *user_details)
-            print("Character created and stored in database:", user_details)
-            await interaction.response.send_message(content=f"{interaction.user} character created successfully!",
+            print("Event chosen and saved to database:", user_details)
+            await interaction.response.send_message(content=f"{interaction.user} event registered successfully!",
                                                     ephemeral=True)
         except Exception as e:
-            print(f"Error inserting character into database: {e}")
-            await interaction.response.send_message(content=f"Failed to create character: {e}", ephemeral=True)
+            print(f"Error registering event: {e}")
+            await interaction.response.send_message(content=f"Failed to register event {e}", ephemeral=True)
 
-        await interaction.response.send_message(f"You rolled a {dice}!", ephemeral=True)
+        await interaction.response.send_message(f"You rolled a {dice}! Your event outcome will be discussed"
+                                                f"with your DM", ephemeral=True)
 
     @discord.ui.button(label="Crafting", style=discord.ButtonStyle.blurple)
     async def crafting_button(self, interaction: discord.Interaction, button: discord.ui.Button):
